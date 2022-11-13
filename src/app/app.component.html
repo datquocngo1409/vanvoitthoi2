@@ -22,3 +22,11 @@
 <div *ngIf="hiddenButton" class="letter-container">
   <app-letter></app-letter>
 </div>
+<div *ngIf="!isIntransigent && hiddenButton" class="makeMeIntransigentContainer">
+  <button class="custom-btn btn-14" (click)="makeMeIntransigent()">
+    <span>Tôi khó tính đấy được chưa? Cho tôi chọn tiếp</span>
+  </button>
+</div>
+<div class="information">
+  Created by @xien.bannnn
+</div>

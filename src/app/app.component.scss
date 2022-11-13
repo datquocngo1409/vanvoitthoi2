@@ -139,6 +139,41 @@
   top: 2px;
 }
 
+.btn-14 {
+  background-color: #89d8d3;
+  background-image: linear-gradient(315deg, #E8411D 0%, #E19D8F 74%);
+  border: none;
+  z-index: 1;
+}
+.btn-14:after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: 5px;
+  background-color: #4dccc6;
+  background-image: linear-gradient(315deg, #E8411D 0%, #E19D8F 74%);
+  box-shadow:
+    -7px -7px 20px 0px #fff9,
+    -4px -4px 5px 0px #fff9,
+    7px 7px 20px 0px #0002,
+    4px 4px 5px 0px #0001;
+  transition: all 0.3s ease;
+}
+.btn-14:hover {
+  color: #fff;
+}
+.btn-14:hover:after {
+  top: 0;
+  height: 100%;
+}
+.btn-14:active {
+  top: 2px;
+}
+
 .cssload-container {
   position: fixed;
   width: 100%;
@@ -149,4 +184,37 @@
   background-color: rgba(255, 255, 255, 0.7);
   z-index: 9999;
   opacity: 0.7;
+}
+
+.makeMeIntransigentContainer {
+  position: fixed;
+  height: 80px;
+  width: 100vw;
+  bottom: 10px;
+  z-index: 9999;
+  @media screen and (max-width: 500px) {
+    top: 10px !important;
+  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  button {
+    width: 22.4vw;
+    @media screen and (max-width: 1600px) {
+      width: 35vw;
+    }
+    @media screen and (max-width: 1400px) {
+      width: 38vw;
+    }
+    @media screen and (max-width: 500px) {
+      width: 90vw;
+    }
+  }
+}
+.information {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 10px;
+  color: floralwhite;
 }

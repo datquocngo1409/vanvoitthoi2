@@ -31,10 +31,9 @@ export class AppComponent {
   showLoading = false;
   selectCount = 0;
   hiddenButton = false;
+  isIntransigent = false;
   constructor() {
-    if (localStorage.getItem('options') === null) {
-      this.options = this.list;
-    }
+    this.options = this.list;
   }
 
   select() {
@@ -49,12 +48,20 @@ export class AppComponent {
       }
       setTimeout(() => {
         this.optionSelected = this.options[Math.floor(Math.random() * this.options.length)];
-        this.selectCount++;
+        if (!this.isIntransigent) {
+          this.selectCount++;
+        }
         this.showLoading = false;
       }, 4000);
     } else {
       this.hiddenButton = true;
       this.optionSelected = 'Ăn đấm';
     }
+  }
+
+  makeMeIntransigent() {
+    this.selectCount = 0;
+    this.hiddenButton = false;
+    this.isIntransigent = true;
   }
 }
