@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -32,11 +32,18 @@ export class AppComponent {
   selectCount = 0;
   hiddenButton = false;
   isIntransigent = false;
+  isPlayAudio = false;
   constructor() {
     this.options = this.list;
   }
 
   select() {
+    if (!this.isPlayAudio) {
+      let audio: HTMLAudioElement = new Audio('../assets/mp3/xoso.mp3');
+      audio.play();
+      audio.loop = true;
+      this.isPlayAudio = true;
+    }
     if (this.selectCount < 3) {
       this.showLoading = true;
       const timeWaiting = 4000 / (this.options.length * 3);
