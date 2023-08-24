@@ -1,32 +1,42 @@
 <div class="container">
-  <div class="form">
-    <div class="header">
-      <span>Vũ trụ sẽ cho bạn biết bạn nên ăn gì!</span>
+  <div class="inputContainer">
+    <input type="text" [(ngModel)]="input" (keyup.enter)="search(input)" placeholder="Nhập để tìm kiếm các từ cùng vần">
+    <button (click)="search(input)">
+      <div *ngIf="isMobile">
+        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 50 50">
+          <path d="M 21 3 C 11.621094 3 4 10.621094 4 20 C 4 29.378906 11.621094 37 21 37 C 24.710938 37 28.140625 35.804688 30.9375 33.78125 L 44.09375 46.90625 L 46.90625 44.09375 L 33.90625 31.0625 C 36.460938 28.085938 38 24.222656 38 20 C 38 10.621094 30.378906 3 21 3 Z M 21 5 C 29.296875 5 36 11.703125 36 20 C 36 28.296875 29.296875 35 21 35 C 12.703125 35 6 28.296875 6 20 C 6 11.703125 12.703125 5 21 5 Z"></path>
+        </svg>
+      </div>
+      <div *ngIf="!isMobile">Search</div>
+    </button>
+  </div>
+  <div class="contentContainer">
+    <div *ngIf="searched" class="elementContainer">
+      <h3>Từ có nghĩa, có vần phù hợp</h3>
+      <div *ngFor="let item of sameList" class="item">
+        {{item}}
+      </div>
+      <div *ngIf="!(sameList && sameList.length > 0)">
+        <h5>Không có từ nào</h5>
+      </div>
     </div>
-    <div class="selectedOption">
-      <span>{{optionSelected}}</span>
+    <div *ngIf="searched" class="elementContainer">
+      <h3>Từ có nghĩa nhưng vần chưa quá phù hợp</h3>
+      <div *ngFor="let item of semiSameList" class="item">
+        {{item}}
+      </div>
+      <div *ngIf="!(semiSameList && semiSameList.length > 0)">
+        <h5>Không có từ nào</h5>
+      </div>
     </div>
-    <div class="buttonContainer">
-      <button *ngIf="!hiddenButton && selectCount === 0" class="custom-btn btn-13" (click)="select()">
-        <span>Tiểu nhị, lên món</span>
-      </button>
-      <button *ngIf="!hiddenButton && selectCount !== 0" class="custom-btn btn-13" (click)="select()">
-        <span>Chê! Món khác</span>
-      </button>
+    <div *ngIf="searched" class="elementContainer">
+      <h3>Từ có vần phù hợp nhưng có thể không có nghĩa</h3>
+      <div *ngFor="let item of formTuDon" class="item">
+        {{item}}
+      </div>
+      <div *ngIf="!(formTuDon && formTuDon.length > 0)">
+        <h5>Không có từ nào</h5>
+      </div>
     </div>
   </div>
-</div>
-<div *ngIf="showLoading" class="cssload-container">
-  <app-loading></app-loading>
-</div>
-<div *ngIf="hiddenButton" class="letter-container">
-  <app-letter></app-letter>
-</div>
-<div *ngIf="!isIntransigent && hiddenButton" class="makeMeIntransigentContainer">
-  <button class="custom-btn btn-14" (click)="makeMeIntransigent()">
-    <span>Tôi khó tính đấy được chưa? Cho tôi chọn tiếp</span>
-  </button>
-</div>
-<div class="information">
-  Created by @xien.bannnn
 </div>

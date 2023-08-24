@@ -1,4 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
+import {BehaviorSubject} from "rxjs";
+import {HttpClient} from "@angular/common/http";
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-root',
@@ -7,68 +10,129 @@ import {Component, OnInit} from '@angular/core';
 })
 
 export class AppComponent {
-  title = 'Tôi nên ăn gì?';
-  options: any = [];
-  list = [
-    'Bún bò', 'Bún đậu mắm tôm', 'Bún đậu nước mắm', 'Bún riêu', 'Bún chả', 'Bún cá', 'Bún ngan', 'Bún bò Huế', 'Hủ tiếu',
-    'Cơm rang dưa bò', 'Cơm rang cải bò', 'Cơm rang đùi gà', 'Cơm rang', 'Nghèo rồi, ăn cơm bụi đi', 'Nghèo thì đi nấu cơm đi', 'Cơm tấm', 'Cơm cháy', 'Cơm mẹ nấu',
-    'Phở bò', 'Phở gà', 'Phở ngan', 'Phở cuốn',
-    'Cháo lòng', 'Cháo gà',
-    'Mì lòng', 'Mì Quảng', 'Mì xào', 'Miến trộn',
-    'Gà rán', 'Khoai tây lắc phô mai', 'Nem nướng Nha Trang',
-    'Lẩu', 'Nướng', 'Xiên bẩn', 'Chả cá', 'Ốc', 'Mướp đắng nhồi thịt', 'Nem chua', 'Nem chua rán',
-    'Bánh mì', 'Bánh xèo', 'Bánh bao', 'Bánh cuốn', 'Bánh bèo', 'Bánh bột lọc', 'Bánh chưng', 'Bánh tráng trộn', 'Bánh tráng nướng', 'Bánh tráng cuộn', 'Bánh rán',
-    'Bánh trung thu', 'Bông lan trứng muối',
-    'Bò sốt vang', 'Chả lá lốt', 'Giả cầy ', 'Tiết canh', 'Thịt chua', 'Trứng vịt lộn', 'Cút lộn mè sao',
-    'Tôm hùm', 'Cua hoàng đế', 'Hải sản cao cấp', 'Chè', 'Tào phớ', 'Sương sa hạt lựu',
-    'Uống rượu thay cơm', 'Uống bia thay cơm', 'Thịt chó', 'Thịt mèo', 'Thịt kho tàu',
-    'Xôi xéo', 'Xôi gấc', 'Xôi lạc', 'Xôi dừa', 'Xôi chim', 'Xôi gà', 'Cốm',
-    'It\'s giảm cân time', 'Ăn đấm', 'Ăn đòn', 'Ăn đồng bằng ăn cát', 'Ăn năn hối cải', 'Ăn cháo đá bát',
-    'Xoài xanh chấp bột canh', 'Gà hầm lá ngải', 'Trứng hầm lá ngải',
-    'Sữa đậu nành', 'Ngô nướng', 'Đi nhậu thôiii!'
-  ];
-  optionSelected = '';
-  showLoading = false;
-  selectCount = 0;
-  hiddenButton = false;
-  isIntransigent = false;
-  isPlayAudio = false;
-  constructor() {
-    this.options = this.list;
+  title = 'vanvoitthoi';
+  input: string = '';
+  tuGhep: any;
+  tuDon: any;
+  sameList: any = [];
+  semiSameList: any = [];
+  formTuDon = [];
+  searched = false;
+  isMobile = false;
+  isLoading = new BehaviorSubject(false);
+
+  constructor(
+    private readonly httpClient: HttpClient) {
   }
 
-  select() {
-    if (!this.isPlayAudio) {
-      let audio: HTMLAudioElement = new Audio('../assets/mp3/xoso.mp3');
-      audio.play();
-      audio.loop = true;
-      this.isPlayAudio = true;
-    }
-    if (this.selectCount < 3) {
-      this.showLoading = true;
-      const timeWaiting = 4000 / (this.options.length * 3);
-      for (let i = 0; i < this.options.length * 3; i++) {
-        setTimeout(() => {
-          this.optionSelected = '';
-          this.optionSelected = this.options[Math.floor(Math.random() * this.options.length)];
-        }, i * timeWaiting)
-      }
-      setTimeout(() => {
-        this.optionSelected = this.options[Math.floor(Math.random() * this.options.length)];
-        if (!this.isIntransigent) {
-          this.selectCount++;
+  ngOnInit(): void {
+    this.isMobile = window.screen.width < 500;
+    this.readData();
+  }
+
+  // #region private function
+  private readData(): void {
+    this.httpClient.get('assets/data/ghep.xlsx', {responseType: 'blob'})
+      .subscribe((data: any) => {
+        const reader: FileReader = new FileReader();
+        reader.onload = (e: any) => {
+          const bstr: string = e.target.result;
+          const wb: XLSX.WorkBook = XLSX.read(bstr, {type: 'binary'});
+          const wsname: string = wb.SheetNames[0];
+          const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+          this.tuGhep = XLSX.utils.sheet_to_json(ws, {header: 1});
+        };
+        reader.readAsBinaryString(data);
+      });
+    this.httpClient.get('assets/data/don.xlsx', {responseType: 'blob'})
+      .subscribe((data: any) => {
+        const reader: FileReader = new FileReader();
+        reader.onload = (e: any) => {
+          const bstr: string = e.target.result;
+          const wb: XLSX.WorkBook = XLSX.read(bstr, {type: 'binary'});
+          const wsname: string = wb.SheetNames[0];
+          const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+          this.tuDon = XLSX.utils.sheet_to_json(ws, {header: 1});
+        };
+        reader.readAsBinaryString(data);
+      });
+  }
+
+  private removeAccents(str: string): string {
+    return str.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  // #endregion
+  search(value: string): void {
+    this.searched = false;
+    this.reset();
+    const valueSplit = value.split(' ');
+    this.tuGhep.forEach((d: any) => {
+      const dSplit = d[0].split(' ');
+      if (dSplit.length === valueSplit.length) {
+        let same = 0;
+        let semiSame = 0;
+        for (let i = 0; i < valueSplit.length; i++) {
+          if (this.tachPhuAmDau(valueSplit[i]) === this.tachPhuAmDau(dSplit[i])) {
+            same++;
+            semiSame++;
+          } else if (this.tachPhuAmDau(this.removeAccents(valueSplit[i])) === this.tachPhuAmDau(this.removeAccents(dSplit[i]))) {
+            semiSame++;
+          }
         }
-        this.showLoading = false;
-      }, 4000);
-    } else {
-      this.hiddenButton = true;
-      this.optionSelected = 'Ăn đấm';
-    }
+        if (same === valueSplit.length) {
+          this.sameList.push(d);
+        } else if (semiSame === valueSplit.length) {
+          this.semiSameList.push(d);
+        }
+      }
+    });
+    const fromTuDon: any = [];
+    valueSplit.forEach(word => {
+      const wordI: any = [];
+      this.tuDon.forEach((tuDon: any) => {
+        if (this.tachPhuAmDau(word) === this.tachPhuAmDau(tuDon[0])) {
+          wordI.push(tuDon);
+        }
+      });
+      fromTuDon.push(wordI);
+    });
+    this.formTuDon = this.generateCombinations(fromTuDon);
+    this.searched = true;
   }
 
-  makeMeIntransigent() {
-    this.selectCount = 0;
-    this.hiddenButton = false;
-    this.isIntransigent = true;
+  private tachPhuAmDau(text: string): string {
+    const phuAm = [
+      'b', 'ch', 'c', 'd', 'đ', 'gh', 'g', 'h', 'kh', 'k', 'l', 'm', 'nh', 'ng', 'ngh', 'n', 'ph', 'p', 'q', 'r', 's', 'th', 'tr', 't', 'v', 'x', 'y'
+    ];
+
+    for (const pA of phuAm) {
+      if (text.toLowerCase().startsWith(pA)) {
+        return text.toLowerCase().replace(pA, '');
+      }
+    }
+
+    return text; // Trả về chuỗi rỗng nếu không tìm thấy phụ âm đầu
+  }
+
+  private reset(): any {
+    this.sameList = [];
+    this.semiSameList = [];
+  }
+
+  private generateCombinations(arrays: any, currentCombination = [], index = 0, result = []): any {
+    if (index === arrays.length) {
+      // @ts-ignore
+      result.push(currentCombination.toString().replaceAll(',', ' '));
+      return;
+    }
+
+    const currentArray = arrays[index];
+    for (const item of currentArray) {
+      const newCombination: any = [...currentCombination, item];
+      this.generateCombinations(arrays, newCombination, index + 1, result);
+    }
+
+    return result;
   }
 }
